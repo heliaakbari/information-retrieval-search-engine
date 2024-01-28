@@ -11,13 +11,12 @@ query_sentence = normalizer.normalize(query_sentence)
 q_terms = re.split(r'\s+', query_sentence)
 q_dic ={}
 N_q = 0
-N_docs = 12202
 
 with open('docs/tf_idf_docs.json') as json_file:
     tf_idf= json.load(json_file)
 with open('docs/doc_vector_size.json') as json_file:
     doc_size= json.load(json_file)
-
+N_docs = len(doc_size)
 not_in_tf_idf = []
 for term in q_terms:
         term = stemmer.convert_to_stem(term).split('&')[0]
@@ -57,7 +56,7 @@ for term in q_dic:
 
 sorted_docs = sorted(doc_scores.items(), key=lambda x:x[1],reverse=True)
 
-with open('docs/IR_data_news_12k.json') as json_file:
+with open('docs/IR_data_news.json') as json_file:
     documents =json.load(json_file)
 
 result_dic = []

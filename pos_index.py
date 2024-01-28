@@ -5,12 +5,12 @@ from general_normalization import General_normalization
 normalizer = General_normalization();
 stemmer = FindStems()
 
-f = open('docs/IR_data_news_12k.json',encoding="utf-8")
+f = open('docs/IR_data_news.json',encoding="utf-8")
 data = json.load(f)
 f.close()
 
 pos_index = {}
-for docno in range(0,12202):
+for docno in data:
     doc = data[str(docno)]["content"]
     normalized_doc = normalizer.normalize(doc).strip()
     tokenized_doc = re.split(r'\s+', normalized_doc)
@@ -53,6 +53,5 @@ file2.close()
 sorted_pos_index = dict(sorted_pos_index)
 with open("docs/pos_index.json", "w") as outfile: 
     json.dump(sorted_pos_index,outfile,indent=None)
-
 
 
