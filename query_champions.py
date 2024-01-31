@@ -1,6 +1,7 @@
 import re
 import json 
 import math
+import time
 from parsivar import FindStems
 from general_normalization import General_normalization
 normalizer = General_normalization();
@@ -11,7 +12,7 @@ query_sentence = normalizer.normalize(query_sentence)
 q_terms = re.split(r'\s+', query_sentence)
 q_dic ={}
 N_q = 0
-
+start = time.time()
 with open('docs/tf_idf_docs.json') as json_file:
     tf_idf= json.load(json_file)
 with open('docs/doc_vector_size.json') as json_file:
@@ -45,7 +46,8 @@ for term in q_dic:
    if term not in not_in_tf_idf:
         q_dic[term] /= length 
 
-print(q_dic)
+
+print(sorted(q_dic.items(), key=lambda x:x[1],reverse=True))
 
 doc_scores ={}
 for term in q_dic:
@@ -64,6 +66,8 @@ with open('docs/IR_data_news.json') as json_file:
 result_dic = []
 for i in range (min(10,len(sorted_docs))):
     result_dic.append((sorted_docs[i],documents[sorted_docs[i][0]]))
-
+finish = time.time()
 with open("results_champion/"+query_sentence+".json", "w") as outfile: 
     json.dump(result_dic,outfile,indent=None)
+
+print(finish-start)
