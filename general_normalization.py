@@ -276,21 +276,6 @@ class General_normalization:
             self.punctuation_dot,
         ]
 
-        #self.semi_space = {"\u200b": "", "\u200d": " ", "'\u200e": " ", "'\u200f": " ", "\u2066": " ", "\u2067": " ",
-        #                   "\u202a": " ", "\u202b": " ", "\u202d": " "}
-        
-        self.math_replaces = {
-            "½": "۱/۲",
-            "⅓": "۱/۳",
-            "⅔": "۲/۳",
-            "¼": "۱/۴",
-            "¾": "۳/۴",
-            "⅛": "۱/۸",
-            "⅜": "۳/۸",
-            "⅝": "۵/۸",
-            "⅞": "۷/۸"
-        }
-
         self.characters_to_remain = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "ا","ب", "پ",
                                      "ت", "ث", "ج", "چ", "ح", "خ", "د", "ذ", "ر", "ز", "ژ", "س", "ش", "ص", "ض", "ط",
                                      "ظ", "ع", "غ", "ف", "ک", "گ", "ق", "ل", "م", "ن", "و", "ه", "ی",
@@ -321,29 +306,6 @@ class General_normalization:
             sentence = sentence.translate(str.maketrans(punctuation_replace))
         return sentence
 
-    def math_correction(self, sentence):
-        sentence = sentence.translate(str.maketrans(self.math_replaces))
-        return sentence
-    
-    def unique_floating_point(self, sentence):
-        sentence = self.number_correction(sentence=sentence)
-        floating_points_with_slash = re.findall('[۰-۹]+/[۰-۹]+', sentence)
-        floating_points_with_comma = re.findall('[۰-۹]+,[۰-۹]+', sentence)
-        floating_points_with_comma2 = re.findall('[۰-۹]+،[۰-۹]+', sentence)
-        if floating_points_with_slash:
-            for floating_point_with_slash in floating_points_with_slash:
-                floating_point_with_slash_new = floating_point_with_slash.replace("/", "")
-                sentence = sentence.replace(str(floating_point_with_slash), floating_point_with_slash_new)
-        if floating_points_with_comma:
-            for floating_point_with_comma in floating_points_with_comma:
-                floating_point_with_comma_new = floating_point_with_comma.replace(",", "")
-                sentence = sentence.replace(str(floating_point_with_comma), floating_point_with_comma_new)
-        if floating_points_with_comma2:
-            for floating_point_with_comma2 in floating_points_with_comma2:
-                floating_point_with_comma_new2 = floating_point_with_comma2.replace("،", "")
-                sentence = sentence.replace(str(floating_point_with_comma2), floating_point_with_comma_new2)
-        return sentence
-
 
     def space_between_punctuations_and_text(self, sentence):
         sentence = re.sub('([.,!?()])', r'\1', sentence)
@@ -356,13 +318,7 @@ class General_normalization:
             if character not in self.characters_to_remain:
                 sentence = sentence.replace(character," ")
         return sentence
-    
-    #def semi_space_correction(self, sentence):
-    #    sentence = re.sub('({})'.format('|'.join(map(re.escape, self.semi_space.keys()))),
-    #                      lambda m: self.semi_space[m.group()],
-    #                      sentence)
-    #    return sentence
-    
+
     def space_correction(self, sentence):
         ## This Function is a mixture of HAZM and ParsiVar Features
         punc_after, punc_before = r'\.:!،؛؟»\]\)\}', r'«\[\(\{'
@@ -376,8 +332,6 @@ class General_normalization:
                                       r'بندی|کننده|کنندگان|گیری|پرداز|پردازی|پردازان|آمیز|سنجی|ریزی|داری|دهنده|آمیز|پذیری' \
                                       r'|پذیر|پذیران|گر|ریز|ریزی|رسانی|یاب|یابی|گانه|گانه‌ای|انگاری|گا|بند|رسانی|دهندگان|دار)( )'
         sentence = re.sub(complex_word_suffix_pattern, r'‌\2\3', sentence)
-        #sentence = re.sub('([' + punc_after[:3] + '])([^ ' + punc_after + r'\d۰۱۲۳۴۵۶۷۸۹])', r'\1 \2',
-        #                  sentence)  # put space after . and :
         sentence = sentence.replace(r'‌ ',' ')
         sentence = sentence.replace(r' ‌',' ')
         return sentence
@@ -385,21 +339,12 @@ class General_normalization:
     def normalize(self,sentence):
         x = sentence
         x = self.alphabet_correction(x)
-        #print(x)
         x = self.arabic_correction(x)
-        #print(x)
         x = self.punctuation_correction(x)
-        #print(x)
-        x = self.math_correction(x)
-        #print(x)
         x = self.number_correction(x)
-        #print(x)
         x = self.space_correction(x)
-        #print(x)
         x = self.space_between_punctuations_and_text(x)
-        #print(x)
         x = self.remove_not_desired_chars(x)
-        #print(x)
         return x
         
 
